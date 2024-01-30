@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "prisma:init": "prisma generate && prisma migrate dev",
+    "prisma:dev": "prisma migrate dev",
+    "prisma:prod": "prisma migrate deploy",
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
