@@ -5,6 +5,12 @@ const nextConfig = {
         '@ant-design/pro-editor',
         'react-intersection-observer',
     ],
+    experimental: {
+        esmExternals: false,
+    },
+    eslint: {
+        ignoreDuringBuilds: true,
+    }
 };
 
 export default nextConfig;
