@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "prisma:dev": "prisma migrate dev",
-    "prisma:prod": "dotenv -e .env.local && prisma migrate deploy",
+    "prisma:prod": "dotenv -e .env.local prisma migrate deploy",
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
