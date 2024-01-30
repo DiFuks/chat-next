@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "prisma:dev": "prisma migrate dev",
-    "prisma:prod": "prisma migrate deploy",
+    "prisma:prod": "dotenv -e .env.local && prisma migrate deploy",
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
@@ -28,6 +28,7 @@
     "antd-style": "^3.6.1",
     "cookie": "^0.6.0",
     "date-fns": "^3.3.1",
+    "dotenv-cli": "^7.3.0",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
     "lodash": "^4.17.21",
