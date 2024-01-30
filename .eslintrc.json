@@ -1,6 +1,10 @@
 {
-  "extends": "plugin:@dodopizza/base",
+  "extends": [
+    "plugin:@dodopizza/base",
+    "plugin:@next/next/recommended"
+  ],
   "rules": {
-    "import/no-default-export": "off"
+    "import/no-default-export": "off",
+    "no-console": "off"
   }
 }

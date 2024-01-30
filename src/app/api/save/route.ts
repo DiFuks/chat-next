@@ -1,22 +1,28 @@
-import { ChatMessage, ChatMessageMap } from '@ant-design/pro-chat';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
+import { ChatMessageMap } from '@ant-design/pro-chat';
 import { cookies } from 'next/headers';
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
-import { openai } from '../../../lib/openAi';
 import { prisma } from '../../../lib/prisma';
 
-export const POST = async (req: Request) => {
-	const { messages, chatId } = await req.json();
+export const POST = async (req: Request): Promise<Response> => {
+	const { messages, chatId, apiKey } = (await req.json()) as {
+		messages: ChatMessageMap;
+		chatId: string;
+		apiKey: string;
+	};
 	const userId = cookies().get(`userId`);
 
 	if (!userId) {
 		throw new Error(`No userId`);
 	}
 
+	const openai = new OpenAI({
+		apiKey,
+	});
+
 	if (Object.values(messages).length === 4) {
-		const preparedMessages = Object.values(messages as ChatMessageMap).map(
+		const preparedMessages = Object.values(messages).map(
 			message =>
 				({
 					content: String(message.content),
@@ -40,7 +46,7 @@ export const POST = async (req: Request) => {
 		const newName = name.choices[0].message.content;
 
 		if (!newName) {
-			return;
+			return new Response();
 		}
 
 		await prisma.chat.update({

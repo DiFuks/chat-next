@@ -20,7 +20,7 @@ const withRewritenCookieHeader = (requestHeaders: Headers): { headers: Headers; 
 	return { headers: newRequestHeaders, userId: parsedCookies.userId };
 };
 
-export const middleware = async (request: NextRequest) => {
+export const middleware = (request: NextRequest): NextResponse => {
 	const { headers, userId } = withRewritenCookieHeader(request.headers);
 
 	const response = NextResponse.next({

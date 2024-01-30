@@ -1,5 +1,4 @@
 import { Chat } from '@prisma/client';
-import { cookies } from 'next/headers';
 
 import { prisma } from './prisma';
 

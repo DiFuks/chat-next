@@ -11,8 +11,11 @@
     "lint": "next lint"
   },
   "devDependencies": {
+    "@ant-design/icons": "^5.2.6",
     "@ant-design/pro-chat": "^1.7.0",
     "@dodopizza/eslint-plugin": "^2.1.0",
+    "@next/eslint-plugin-next": "^14.1.0",
+    "@prisma/client": "5.8.1",
     "@types/cookie": "^0",
     "@types/lodash": "^4",
     "@types/node": "^20",
@@ -22,8 +25,10 @@
     "ai": "^2.2.31",
     "antd": "^5.13.3",
     "antd-style": "^3.6.1",
+    "cookie": "^0.6.0",
     "date-fns": "^3.3.1",
     "eslint": "^8",
+    "eslint-config-next": "14.1.0",
     "lodash": "^4.17.21",
     "next": "14.1.0",
     "openai": "^4.26.0",
@@ -34,9 +39,5 @@
     "typescript": "^5",
     "uuid": "^9.0.1"
   },
-  "packageManager": "yarn@4.0.2",
-  "dependencies": {
-    "@prisma/client": "5.8.1",
-    "cookie": "^0.6.0"
-  }
+  "packageManager": "yarn@4.0.2"
 }

@@ -1,13 +1,16 @@
 import { ChatMessage } from '@ant-design/pro-chat';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
+import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 import { downloadFile } from '../../../lib/downloadFile';
-import { openai } from '../../../lib/openAi';
 
-export const POST = async (req: Request) => {
-	const { messages } = await req.json();
-	const preparedMessages = (messages as ChatMessage[]).map(
+export const POST = async (req: Request): Promise<Response> => {
+	const { messages, apiKey } = (await req.json()) as { messages: ChatMessage[]; apiKey: string };
+	const openai = new OpenAI({
+		apiKey,
+	});
+	const preparedMessages = messages.map(
 		message =>
 			({
 				content: String(message.content),
@@ -33,7 +36,7 @@ export const POST = async (req: Request) => {
 	if (checkQuestionImageResponse.choices[0].message.content === `true`) {
 		const image = await openai.images.generate({
 			model: `dall-e-3`,
-			prompt: preparedMessages.map(message => `${message.role}: ${message.content}`).join(`\n`),
+			prompt: preparedMessages.map(message => `${message.role}: ${String(message.content)}`).join(`\n`),
 		});
 
 		const imageUrl = image.data[0].url;
