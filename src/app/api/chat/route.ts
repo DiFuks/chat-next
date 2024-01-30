@@ -1,7 +1,5 @@
 import { ChatMessage } from '@ant-design/pro-chat';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
-import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 import { downloadFile } from '../../../lib/downloadFile';
