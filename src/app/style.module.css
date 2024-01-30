@@ -1,0 +1,11 @@
+.menuItem .deleteButton {
+    display: none;
+}
+
+.menuItem:hover .deleteButton {
+    display: inline-block;
+
+    &::before {
+        display: none;
+    }
+}

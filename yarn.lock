@@ -62,6 +62,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ant-design/nextjs-registry@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@ant-design/nextjs-registry@npm:1.0.0"
+  peerDependencies:
+    "@ant-design/cssinjs": ^1.18.2
+    antd: ^5.0.0
+    next: ^14.0.0
+    react: ">=16.0.0"
+    react-dom: ">=16.0.0"
+  checksum: 26a339b967e53ee2c93e325219d3461f986ae905459a0d480e5ccd60b3408da126d81bf027ef5126e466d44704569d14ad236ad91f25d137ccf5ed642b09e64f
+  languageName: node
+  linkType: hard
+
 "@ant-design/pro-chat@npm:^1.7.0":
   version: 1.7.0
   resolution: "@ant-design/pro-chat@npm:1.7.0"
@@ -2783,6 +2796,7 @@ __metadata:
   resolution: "chat-next@workspace:."
   dependencies:
     "@ant-design/icons": "npm:^5.2.6"
+    "@ant-design/nextjs-registry": "npm:^1.0.0"
     "@ant-design/pro-chat": "npm:^1.7.0"
     "@dodopizza/eslint-plugin": "npm:^2.1.0"
     "@next/eslint-plugin-next": "npm:^14.1.0"

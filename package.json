@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@ant-design/icons": "^5.2.6",
+    "@ant-design/nextjs-registry": "^1.0.0",
     "@ant-design/pro-chat": "^1.7.0",
     "@dodopizza/eslint-plugin": "^2.1.0",
     "@next/eslint-plugin-next": "^14.1.0",
