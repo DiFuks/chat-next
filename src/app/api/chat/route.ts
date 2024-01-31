@@ -19,15 +19,31 @@ export const POST = async (req: Request): Promise<Response> => {
 			}) as ChatCompletionMessageParam,
 	);
 
+	const promt = preparedMessages.map(message => `${message.role}: ${String(message.content)}`).join(`\n`);
+
 	const checkQuestionImageResponse = await openai.chat.completions.create({
 		model: `gpt-4-turbo-preview`,
 		messages: [
 			{
-				content: `Как только пользователь захочет нарисовать что-то и даст описание рисунка - ответь true. Если пользователь не дал описание картины, отвечай false`,
+				content: `Ты помогаешь анализировать диалог на наличие намерения сгенерировать изображение. Пользователь пришлет этот диалог`,
 				role: `system`,
-				name: `system`,
 			},
-			...preparedMessages,
+			{
+				content: `Ты отвечаешь только true/false`,
+				role: `system`,
+			},
+			{
+				content: `Когда в последнем сообщении обнаружится намерение сгенерировать изображение, ответь true. Во всех остальных случаях ответь false.`,
+				role: `system`,
+			},
+			{
+				content: `Если пользователь хочет нарисовать изображение, но не дал его описание - отвечай false. Отвечай true только если пользователь дал описание изображения.`,
+				role: `system`,
+			},
+			{
+				content: promt,
+				role: `user`,
+			},
 		],
 	});
 
@@ -57,7 +73,7 @@ export const POST = async (req: Request): Promise<Response> => {
 		stream: true,
 		messages: [
 			{
-				content: `Если пользователь попросит нарисовать что-то, но не даст описание, попроси описать. Не отказывай пользователю в рисовании`,
+				content: `Если пользователь попросит нарисовать что-то, но не даст описание, попроси описать. Не отказывай пользователю в рисовании. Ответь, что можешь нарисовать, попроси дать описание`,
 				role: `system`,
 				name: `system`,
 			},

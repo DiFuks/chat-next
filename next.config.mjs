@@ -1,13 +1,17 @@
+import nextPWA from 'next-pwa';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    transpilePackages: [
-        '@ant-design/pro-chat',
-        '@ant-design/pro-editor',
-        'react-intersection-observer',
-    ],
-    eslint: {
-        ignoreDuringBuilds: true,
-    }
+	transpilePackages: [`@ant-design/pro-chat`, `@ant-design/pro-editor`, `react-intersection-observer`],
+	eslint: {
+		ignoreDuringBuilds: true,
+	},
 };
 
-export default nextConfig;
+const withPWA = nextPWA({
+	dest: `public`,
+	register: true,
+	skipWaiting: true,
+});
+
+export default withPWA(nextConfig);
