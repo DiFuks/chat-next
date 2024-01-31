@@ -7,7 +7,7 @@
     "prisma:dev": "prisma migrate dev",
     "prisma:prod": "dotenv -e .env.local prisma migrate deploy",
     "dev": "next dev --turbo",
-    "build": "next build",
+    "build": "NODE_OPTIONS=\"--max_old_space_size=4096 --trace-warnings\" next build",
     "start": "next start",
     "lint": "next lint"
   },
