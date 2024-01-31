@@ -4,8 +4,8 @@
     "display": "fullscreen",
     "scope": "/",
     "start_url": "/",
-    "name": "chat-next",
-    "short_name": "chat-next",
+    "name": "Chat Next",
+    "short_name": "Chat Next",
     "icons": [
         {
             "src": "/icon-192x192.png",
