@@ -2,10 +2,10 @@
     display: none;
 }
 
+.menuItem .deleteButton::before {
+    display: none;
+}
+
 .menuItem:hover .deleteButton {
     display: inline-block;
-
-    &::before {
-        display: none;
-    }
 }
