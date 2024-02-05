@@ -29,15 +29,11 @@ export const POST = async (req: Request): Promise<Response> => {
 				role: `system`,
 			},
 			{
-				content: `Ты отвечаешь только true/false`,
+				content: `Ты отвечаешь только false, если в последнем сообщении нет намерения сгенерировать изображение. Во всех остальных случаях отвечай текстом для генерации изображения.`,
 				role: `system`,
 			},
 			{
-				content: `Когда в последнем сообщении обнаружится намерение сгенерировать изображение, ответь true. Во всех остальных случаях ответь false.`,
-				role: `system`,
-			},
-			{
-				content: `Если пользователь хочет нарисовать изображение, но не дал его описание - отвечай false. Отвечай true только если пользователь дал описание изображения.`,
+				content: `Когда в последнем сообщении обнаружится намерение сгенерировать изображение, ответь текстом с описанием этого изображения на основе диалога. Во всех остальных случаях ответь false.`,
 				role: `system`,
 			},
 			{
@@ -47,12 +43,14 @@ export const POST = async (req: Request): Promise<Response> => {
 		],
 	});
 
+	const checkQuestionImageMessage = checkQuestionImageResponse.choices[0].message.content;
+
 	console.log(`Check image question`, checkQuestionImageResponse.choices[0].message.content);
 
-	if (checkQuestionImageResponse.choices[0].message.content === `true`) {
+	if (!!checkQuestionImageMessage && checkQuestionImageMessage !== `false`) {
 		const image = await openai.images.generate({
 			model: `dall-e-3`,
-			prompt: preparedMessages.map(message => `${message.role}: ${String(message.content)}`).join(`\n`),
+			prompt: checkQuestionImageMessage.slice(-4000),
 		});
 
 		const imageUrl = image.data[0].url;
@@ -73,7 +71,12 @@ export const POST = async (req: Request): Promise<Response> => {
 		stream: true,
 		messages: [
 			{
-				content: `Если пользователь попросит нарисовать что-то, но не даст описание, попроси описать. Не отказывай пользователю в рисовании. Ответь, что можешь нарисовать, попроси дать описание`,
+				content: `Если пользователь попросит нарисовать что-то, но не даст описание, попроси описать`,
+				role: `system`,
+				name: `system`,
+			},
+			{
+				content: `Не отвечай тем, что ты не можешь нарисовать что-то. Если получишь сообщение с просьбой нарисовать, попроси дать описание`,
 				role: `system`,
 				name: `system`,
 			},
