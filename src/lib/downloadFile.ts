@@ -10,7 +10,6 @@ import { v4 } from 'uuid';
 const downloadDir = path.join(process.cwd(), `public/images`);
 
 export const downloadFile = async (url: string): Promise<string> => {
-	console.log(url);
 	const res = await fetch(url);
 	if (!fs.existsSync(downloadDir)) {
 		await mkdir(downloadDir);
