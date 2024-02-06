@@ -51,15 +51,16 @@ export const POST = async (req: Request): Promise<Response> => {
 		const image = await openai.images.generate({
 			model: `dall-e-3`,
 			prompt: checkQuestionImageMessage.slice(-4000),
+			response_format: `url`,
 		});
 
-		const imageUrl = image.data[0].url;
+		const imageJSON = image.data[0].url;
 
-		if (!imageUrl) {
+		if (!imageJSON) {
 			return new Response(`Не удалось сгенерировать изображение`);
 		}
 
-		const response = await downloadFile(imageUrl);
+		const response = await downloadFile(imageJSON);
 
 		console.log(`Image prompt:`, image.data[0].revised_prompt);
 
