@@ -41,7 +41,7 @@ export const POST = async (req: Request): Promise<Response> => {
 		];
 		const preparedMessagesLength = sum(chatCompletionMessageParams.map(message => String(message.content).length));
 
-		void prisma.statistic.create({
+		await prisma.statistic.create({
 			data: {
 				type: $Enums.StatisticType.MESSAGE_IMAGE_DESCRIPTION,
 				apiKey: apiKey.slice(-4),
@@ -62,7 +62,7 @@ export const POST = async (req: Request): Promise<Response> => {
 		}
 		const preparedShortImageDescription = shortImageDescription.slice(-4000);
 
-		void prisma.statistic.create({
+		await prisma.statistic.create({
 			data: {
 				type: $Enums.StatisticType.IMAGE,
 				apiKey: apiKey.slice(-4),
