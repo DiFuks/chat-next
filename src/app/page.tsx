@@ -2,7 +2,7 @@
 
 import { ReactElement } from 'react';
 import { DeleteOutlined, GithubOutlined, MessageOutlined, PlusOutlined } from '@ant-design/icons';
-import { ChatMessageMap } from '@ant-design/pro-chat';
+import { ChatMessage } from '@ant-design/pro-chat';
 import { Button, Flex, Layout, Menu, Space } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
@@ -108,7 +108,7 @@ const Home = async ({
 				</Flex>
 			</Sider>
 			<Content style={{ minHeight: 280 }}>
-				<Chat key={chatId} initialChats={JSON.parse(activeChat.messages) as ChatMessageMap} chatId={chatId} />
+				<Chat key={chatId} initialChats={JSON.parse(activeChat.messages) as ChatMessage[]} chatId={chatId} />
 			</Content>
 		</Layout>
 	);
