@@ -26,3 +26,17 @@ model User {
   updatedAt DateTime @updatedAt
   chats     Chat[]
 }
+
+enum StatisticType {
+  IMAGE
+  MESSAGE
+  MESSAGE_IMAGE_DESCRIPTION
+}
+
+model Statistic {
+  id        String        @id @default(uuid())
+  updatedAt DateTime      @updatedAt
+  apiKey    String
+  type      StatisticType
+  length    Int
+}

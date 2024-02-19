@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "StatisticType" ADD VALUE 'MESSAGE_IMAGE_DESCRIPTION';

@@ -11,3 +11,5 @@ if (process.env.NODE_ENV === `development`) {
 }
 
 export const prisma = prismaInstance;
+
+export { $Enums } from '@prisma/client';

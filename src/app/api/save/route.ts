@@ -1,4 +1,4 @@
-import { ChatMessageMap } from '@ant-design/pro-chat';
+import { ChatMessage } from '@ant-design/pro-chat';
 import { cookies } from 'next/headers';
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
@@ -7,7 +7,7 @@ import { prisma } from '../../../lib/prisma';
 
 export const POST = async (req: Request): Promise<Response> => {
 	const { messages, chatId, apiKey } = (await req.json()) as {
-		messages: ChatMessageMap;
+		messages: ChatMessage[];
 		chatId: string;
 		apiKey: string;
 	};

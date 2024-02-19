@@ -1,12 +1,19 @@
 import { ChatMessage } from '@ant-design/pro-chat';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
+import { sum } from 'lodash';
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 import { downloadFile } from '../../../lib/downloadFile';
 
+import { $Enums, prisma } from '@/lib/prisma';
+
 export const POST = async (req: Request): Promise<Response> => {
-	const { messages, apiKey } = (await req.json()) as { messages: ChatMessage[]; apiKey: string };
+	const { messages, apiKey, isGenerateImage } = (await req.json()) as {
+		messages: ChatMessage[];
+		apiKey: string;
+		isGenerateImage?: boolean;
+	};
 	const openai = new OpenAI({
 		apiKey,
 	});
@@ -19,38 +26,52 @@ export const POST = async (req: Request): Promise<Response> => {
 			}) as ChatCompletionMessageParam,
 	);
 
-	const promt = preparedMessages.map(message => `${message.role}: ${String(message.content)}`).join(`\n`);
+	if (isGenerateImage) {
+		const prompt = preparedMessages.map(message => `${message.role}: ${String(message.content)}`).join(`\n`);
 
-	const checkQuestionImageResponse = await openai.chat.completions.create({
-		model: `gpt-4-turbo-preview`,
-		messages: [
+		const chatCompletionMessageParams: ChatCompletionMessageParam[] = [
 			{
-				content: `Ты помогаешь анализировать диалог на наличие намерения сгенерировать изображение. Пользователь пришлет этот диалог`,
+				content: `Проанализируй диалог и дай краткое текстовое описание для изображения, которое будет сгенерировано на его основе. Пользователь пришлет диалог в следующем сообщении`,
 				role: `system`,
 			},
 			{
-				content: `Ты отвечаешь только false, если в последнем сообщении нет намерения сгенерировать изображение. Во всех остальных случаях отвечай текстом для генерации изображения.`,
-				role: `system`,
-			},
-			{
-				content: `Когда в последнем сообщении обнаружится намерение сгенерировать изображение, ответь текстом с описанием этого изображения на основе диалога. Во всех остальных случаях ответь false.`,
-				role: `system`,
-			},
-			{
-				content: promt,
+				content: prompt,
 				role: `user`,
 			},
-		],
-	});
+		];
+		const preparedMessagesLength = sum(chatCompletionMessageParams.map(message => String(message.content).length));
 
-	const checkQuestionImageMessage = checkQuestionImageResponse.choices[0].message.content;
+		void prisma.statistic.create({
+			data: {
+				type: $Enums.StatisticType.MESSAGE_IMAGE_DESCRIPTION,
+				apiKey: apiKey.slice(-4),
+				length: preparedMessagesLength,
+			},
+		});
+		const shortImageDescriptionResponse = await openai.chat.completions.create({
+			model: `gpt-4-turbo-preview`,
+			messages: chatCompletionMessageParams,
+		});
 
-	console.log(`Check image question`, checkQuestionImageResponse.choices[0].message.content);
+		console.log(`Check image question`, shortImageDescriptionResponse.choices[0].message.content);
 
-	if (!!checkQuestionImageMessage && checkQuestionImageMessage !== `false`) {
+		const shortImageDescription = shortImageDescriptionResponse.choices[0].message.content;
+
+		if (!shortImageDescription) {
+			return new Response(`Не удалось сгенерировать изображение`);
+		}
+		const preparedShortImageDescription = shortImageDescription.slice(-4000);
+
+		void prisma.statistic.create({
+			data: {
+				type: $Enums.StatisticType.IMAGE,
+				apiKey: apiKey.slice(-4),
+				length: preparedShortImageDescription.length,
+			},
+		});
 		const image = await openai.images.generate({
 			model: `dall-e-3`,
-			prompt: checkQuestionImageMessage.slice(-4000),
+			prompt: shortImageDescription.slice(-4000),
 			response_format: `url`,
 		});
 
@@ -67,22 +88,17 @@ export const POST = async (req: Request): Promise<Response> => {
 		return new Response(`![${image.data[0].revised_prompt}](/images/${response})`);
 	}
 
+	await prisma.statistic.create({
+		data: {
+			type: $Enums.StatisticType.MESSAGE,
+			apiKey: apiKey.slice(-4),
+			length: sum(preparedMessages.map(message => String(message.content).length)),
+		},
+	});
 	const response = await openai.chat.completions.create({
 		model: `gpt-4-turbo-preview`,
 		stream: true,
-		messages: [
-			{
-				content: `Если пользователь попросит нарисовать что-то, но не даст описание, попроси описать`,
-				role: `system`,
-				name: `system`,
-			},
-			{
-				content: `Не отвечай тем, что ты не можешь нарисовать что-то. Если получишь сообщение с просьбой нарисовать, попроси дать описание`,
-				role: `system`,
-				name: `system`,
-			},
-			...preparedMessages,
-		],
+		messages: preparedMessages,
 	});
 
 	const stream = OpenAIStream(response);

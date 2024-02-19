@@ -1,18 +1,18 @@
 'use client';
 
-import { FC, useEffect, useState } from 'react';
-import { SettingOutlined } from '@ant-design/icons';
-import { ChatMessageMap, ProChat } from '@ant-design/pro-chat';
-import { Button, Flex, Form, Input, Layout, Menu, theme } from 'antd';
+import { FC, useEffect, useRef, useState } from 'react';
+import { PictureFilled, PictureOutlined, SettingOutlined } from '@ant-design/icons';
+import { ChatMessage, ProChat } from '@ant-design/pro-chat';
+import { Button, Flex, Form, Input, Layout, Menu, Space, Switch, theme, Typography } from 'antd';
 import { Content, Header } from 'antd/es/layout/layout';
 import { debounce } from 'lodash';
 
 interface Props {
-	initialChats: ChatMessageMap;
+	initialChats: ChatMessage[];
 	chatId: string;
 }
 
-const onChatsChangeDebounced = debounce(async (messages: ChatMessageMap, chatId: string, apiKey: string) => {
+const onChatsChangeDebounced = debounce(async (messages: ChatMessage[], chatId: string, apiKey: string) => {
 	await fetch(`/api/save`, {
 		method: `POST`,
 		body: JSON.stringify({ messages, chatId, apiKey }),
@@ -21,6 +21,7 @@ const onChatsChangeDebounced = debounce(async (messages: ChatMessageMap, chatId:
 
 export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 	const [apiKey, setApiKey] = useState<string | null>(null);
+	const isGenerateImageRef = useRef<HTMLElement>(null);
 
 	const {
 		token: { colorBgContainer },
@@ -94,6 +95,19 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 			</Header>
 			<Content style={{ height: `100%` }}>
 				<ProChat
+					actions={{
+						render: defaultDoms => [
+							...defaultDoms,
+							<Space key='image-switcher'>
+								<Typography.Text>Создать изображение</Typography.Text>
+								<Switch
+									checkedChildren={<PictureOutlined />}
+									unCheckedChildren={<PictureFilled />}
+									ref={isGenerateImageRef}
+								/>
+							</Space>,
+						],
+					}}
 					style={{ flexGrow: 1 }}
 					placeholder='Введите сообщение'
 					displayMode='chat'
@@ -111,12 +125,18 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 					onChatsChange={messages => {
 						void onChatsChangeDebounced(messages, chatId, apiKey);
 					}}
-					request={messages =>
-						fetch(`/api/chat`, {
+					request={messages => {
+						console.log(isGenerateImageRef.current);
+
+						return fetch(`/api/chat`, {
 							method: `POST`,
-							body: JSON.stringify({ messages, apiKey }),
-						})
-					}
+							body: JSON.stringify({
+								messages,
+								apiKey,
+								isGenerateImage: isGenerateImageRef.current?.classList.contains(`ant-switch-checked`),
+							}),
+						});
+					}}
 				/>
 			</Content>
 		</Layout>

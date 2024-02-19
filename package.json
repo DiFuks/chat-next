@@ -6,6 +6,7 @@
   "scripts": {
     "prisma:dev": "prisma migrate dev",
     "prisma:prod": "dotenv -e .env.local prisma migrate deploy",
+    "prisma:generate": "prisma generate",
     "dev": "next dev --turbo",
     "build": "NODE_OPTIONS=\"--max_old_space_size=4096 --trace-warnings\" next build",
     "start": "next start",
@@ -14,7 +15,7 @@
   "devDependencies": {
     "@ant-design/icons": "^5.2.6",
     "@ant-design/nextjs-registry": "^1.0.0",
-    "@ant-design/pro-chat": "^1.7.0",
+    "@ant-design/pro-chat": "^1.9.1",
     "@dodopizza/eslint-plugin": "^2.1.0",
     "@ducanh2912/next-pwa": "^10.2.4",
     "@next/eslint-plugin-next": "^14.1.0",

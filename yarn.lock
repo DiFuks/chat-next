@@ -85,9 +85,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ant-design/pro-chat@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "@ant-design/pro-chat@npm:1.7.0"
+"@ant-design/pro-chat@npm:^1.9.1":
+  version: 1.9.1
+  resolution: "@ant-design/pro-chat@npm:1.9.1"
   dependencies:
     "@ant-design/icons": "npm:^5.2.6"
     "@ant-design/pro-editor": "npm:latest"
@@ -112,7 +112,7 @@ __metadata:
     antd: ^5
     antd-style: ^3
     react: ^18
-  checksum: 59cc4b31ae3aaf4db2f698931bdf6bcd0ca3323e8db6832510e4af941ac1514e5c67dfdd8181713152df2c4ead3284086f1bcba91fd1aea89b1c75af60ecb8f2
+  checksum: df3c5736822cb86618662b8d924e4e675ff32dbed01ba1f4552c5d4e858f43fed03d1a65d1487ea7eaab21b23513f7f589b633d34a55d53c2869fb1f7ca344c9
   languageName: node
   linkType: hard
 
@@ -4394,7 +4394,7 @@ __metadata:
   dependencies:
     "@ant-design/icons": "npm:^5.2.6"
     "@ant-design/nextjs-registry": "npm:^1.0.0"
-    "@ant-design/pro-chat": "npm:^1.7.0"
+    "@ant-design/pro-chat": "npm:^1.9.1"
     "@dodopizza/eslint-plugin": "npm:^2.1.0"
     "@ducanh2912/next-pwa": "npm:^10.2.4"
     "@next/eslint-plugin-next": "npm:^14.1.0"
