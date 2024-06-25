@@ -4,8 +4,9 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { PictureFilled, PictureOutlined, SettingOutlined } from '@ant-design/icons';
 import { ChatMessage, ProChat } from '@ant-design/pro-chat';
 import { Button, Flex, Form, Input, Layout, Menu, Space, Switch, theme, Typography } from 'antd';
-import { Content, Header } from 'antd/es/layout/layout';
 import { debounce } from 'lodash';
+
+import { saveChat } from '../../lib/saveChat';
 
 interface Props {
 	initialChats: ChatMessage[];
@@ -13,19 +14,14 @@ interface Props {
 }
 
 const onChatsChangeDebounced = debounce(async (messages: ChatMessage[], chatId: string, apiKey: string) => {
-	await fetch(`/api/save`, {
-		method: `POST`,
-		body: JSON.stringify({ messages, chatId, apiKey }),
-	});
+	await saveChat(messages, chatId, apiKey);
 }, 1000);
 
 export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 	const [apiKey, setApiKey] = useState<string | null>(null);
 	const isGenerateImageRef = useRef<HTMLElement>(null);
 
-	const {
-		token: { colorBgContainer },
-	} = theme.useToken();
+	const { token } = theme.useToken();
 
 	useEffect(() => {
 		const lsApiKey = localStorage.getItem(`apiKey`);
@@ -75,8 +71,13 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 
 	return (
 		<Layout style={{ height: `100vh` }}>
-			<Header
-				style={{ padding: 0, backgroundColor: colorBgContainer, display: `flex`, justifyContent: `flex-end` }}
+			<Layout.Header
+				style={{
+					padding: 0,
+					backgroundColor: token.colorBgContainer,
+					display: `flex`,
+					justifyContent: `flex-end`,
+				}}
 			>
 				<Menu
 					mode='horizontal'
@@ -92,53 +93,42 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 						},
 					]}
 				/>
-			</Header>
-			<Content style={{ height: `100%` }}>
+			</Layout.Header>
+			<Layout.Content style={{ height: `100%` }}>
 				<ProChat
-					actions={{
-						render: defaultDoms => [
-							...defaultDoms,
-							<Space key='image-switcher'>
-								<Typography.Text>Создать изображение</Typography.Text>
-								<Switch
-									checkedChildren={<PictureOutlined />}
-									unCheckedChildren={<PictureFilled />}
-									ref={isGenerateImageRef}
-								/>
-							</Space>,
-						],
-					}}
+					actionsRender={() => [
+						<Space key='image-switcher' style={{ paddingTop: token.padding }}>
+							<Typography.Text>Создать изображение</Typography.Text>
+							<Switch
+								checkedChildren={<PictureOutlined />}
+								unCheckedChildren={<PictureFilled />}
+								ref={isGenerateImageRef}
+							/>
+						</Space>,
+					]}
 					style={{ flexGrow: 1 }}
 					placeholder='Введите сообщение'
-					displayMode='chat'
 					config={{
 						model: `gpt-4-turbo-preview`,
 					}}
 					helloMessage='Привет, чем я могу помочь?'
-					initialChats={initialChats}
-					showTitle
-					userMeta={{
-						title: `Пользователь`,
-						avatar: ``,
-					}}
-					assistantMeta={{ title: `ИИ`, avatar: `🤖` }}
+					initialChatsList={initialChats}
 					onChatsChange={messages => {
 						void onChatsChangeDebounced(messages, chatId, apiKey);
 					}}
-					request={messages => {
-						console.log(isGenerateImageRef.current);
-
-						return fetch(`/api/chat`, {
+					sendMessageRequest={messages =>
+						fetch(`/api/chat`, {
 							method: `POST`,
 							body: JSON.stringify({
 								messages,
 								apiKey,
 								isGenerateImage: isGenerateImageRef.current?.classList.contains(`ant-switch-checked`),
 							}),
-						});
-					}}
+						})
+					}
+					sendButtonRender={(_button, buttonProps) => <Button {...buttonProps}>Отправить</Button>}
 				/>
-			</Content>
+			</Layout.Content>
 		</Layout>
 	);
 };

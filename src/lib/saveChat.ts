@@ -1,16 +1,13 @@
+'use server';
+
 import { ChatMessage } from '@ant-design/pro-chat';
 import { cookies } from 'next/headers';
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
-import { prisma } from '../../../lib/prisma';
+import { prisma } from './prisma';
 
-export const POST = async (req: Request): Promise<Response> => {
-	const { messages, chatId, apiKey } = (await req.json()) as {
-		messages: ChatMessage[];
-		chatId: string;
-		apiKey: string;
-	};
+export const saveChat = async (messages: ChatMessage[], chatId: string, apiKey: string): Promise<void> => {
 	const userId = cookies().get(`userId`);
 
 	if (!userId) {
@@ -46,7 +43,7 @@ export const POST = async (req: Request): Promise<Response> => {
 		const newName = name.choices[0].message.content;
 
 		if (!newName) {
-			return new Response();
+			return;
 		}
 
 		await prisma.chat.update({
@@ -69,6 +66,4 @@ export const POST = async (req: Request): Promise<Response> => {
 			messages: JSON.stringify(messages),
 		},
 	});
-
-	return new Response();
 };

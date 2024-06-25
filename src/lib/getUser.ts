@@ -21,7 +21,11 @@ export const getUser = async ({
 			id: userId.value,
 		},
 		include: {
-			chats: true,
+			chats: {
+				orderBy: {
+					createdAt: `asc`,
+				},
+			},
 		},
 	});
 
@@ -36,34 +40,16 @@ export const getUser = async ({
 				},
 			},
 			include: {
-				chats: true,
+				chats: {
+					orderBy: {
+						createdAt: `asc`,
+					},
+				},
 			},
 		});
 	}
 
-	if (existsUser && !chatId) {
-		return existsUser;
-	}
-
-	if (existsUser && chatId) {
-		const isChatExists = existsUser.chats.some(chat => chat.id === chatId);
-
-		if (!isChatExists) {
-			return prisma.user.update({
-				where: {
-					id: userId.value,
-				},
-				data: {
-					chats: {
-						connect: await createChatForUser({ id: chatId, userId: userId.value }),
-					},
-				},
-				include: {
-					chats: true,
-				},
-			});
-		}
-
+	if (existsUser) {
 		return existsUser;
 	}
 
@@ -74,14 +60,18 @@ export const getUser = async ({
 				create: [
 					{
 						id: chatId,
-						messages: JSON.stringify({}),
+						messages: JSON.stringify([]),
 						name: `Новый чат`,
 					},
 				],
 			},
 		},
 		include: {
-			chats: true,
+			chats: {
+				orderBy: {
+					createdAt: `asc`,
+				},
+			},
 		},
 	});
 };

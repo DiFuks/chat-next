@@ -1,3 +1,7 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
+
 import { prisma } from './prisma';
 
 export const removeChat = async (chatId: string): Promise<void> => {
@@ -6,4 +10,6 @@ export const removeChat = async (chatId: string): Promise<void> => {
 			id: chatId,
 		},
 	});
+
+	revalidatePath(`/`);
 };
