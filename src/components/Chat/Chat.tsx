@@ -2,24 +2,20 @@
 
 import { FC, useEffect, useRef, useState } from 'react';
 import { PictureFilled, PictureOutlined, SettingOutlined } from '@ant-design/icons';
-import { ChatMessage, ProChat } from '@ant-design/pro-chat';
+import { ChatMessage, ProChat, ProChatInstance } from '@ant-design/pro-chat';
 import { Button, Flex, Form, Input, Layout, Menu, Space, Switch, theme, Typography } from 'antd';
-import { debounce } from 'lodash';
 
-import { saveChat } from '../../lib/saveChat';
+import { fetchSave } from './lib/fetchSave';
 
 interface Props {
 	initialChats: ChatMessage[];
 	chatId: string;
 }
 
-const onChatsChangeDebounced = debounce(async (messages: ChatMessage[], chatId: string, apiKey: string) => {
-	await saveChat(messages, chatId, apiKey);
-}, 1000);
-
 export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 	const [apiKey, setApiKey] = useState<string | null>(null);
 	const isGenerateImageRef = useRef<HTMLElement>(null);
+	const chatRef = useRef<ProChatInstance>();
 
 	const { token } = theme.useToken();
 
@@ -30,6 +26,14 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 			setApiKey(lsApiKey);
 		}
 	}, []);
+
+	useEffect(() => {
+		setTimeout(() => {
+			if (chatRef.current) {
+				chatRef.current.scrollToBottom?.();
+			}
+		}, 10);
+	}, [chatId]);
 
 	if (!apiKey) {
 		return (
@@ -80,6 +84,7 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 				}}
 			>
 				<Menu
+					disabledOverflow
 					mode='horizontal'
 					items={[
 						{
@@ -96,6 +101,11 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 			</Layout.Header>
 			<Layout.Content style={{ height: `100%` }}>
 				<ProChat
+					chatRef={chatRef}
+					userMeta={{
+						avatar: `https://avatars.dicebear.com/api/avataaars/1.svg`,
+						title: `Пользователь`,
+					}}
 					actionsRender={() => [
 						<Space key='image-switcher' style={{ paddingTop: token.padding }}>
 							<Typography.Text>Создать изображение</Typography.Text>
@@ -111,19 +121,23 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 					config={{
 						model: `gpt-4-turbo-preview`,
 					}}
+					styles={{
+						chatListItemContent: {
+							width: `auto`,
+						},
+						chatListItem: {
+							cursor: `auto`,
+						},
+					}}
 					helloMessage='Привет, чем я могу помочь?'
 					initialChatsList={initialChats}
-					onChatsChange={messages => {
-						void onChatsChangeDebounced(messages, chatId, apiKey);
-					}}
-					sendMessageRequest={messages =>
-						fetch(`/api/chat`, {
-							method: `POST`,
-							body: JSON.stringify({
-								messages,
-								apiKey,
-								isGenerateImage: isGenerateImageRef.current?.classList.contains(`ant-switch-checked`),
-							}),
+					sendMessageRequest={async messages =>
+						fetchSave({
+							messages,
+							apiKey,
+							chatId,
+							isGenerateImage: !!isGenerateImageRef.current?.classList.contains(`ant-switch-checked`),
+							chatRef,
 						})
 					}
 					sendButtonRender={(_button, buttonProps) => <Button {...buttonProps}>Отправить</Button>}

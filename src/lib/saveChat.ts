@@ -1,6 +1,7 @@
 'use server';
 
 import { ChatMessage } from '@ant-design/pro-chat';
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
@@ -66,4 +67,6 @@ export const saveChat = async (messages: ChatMessage[], chatId: string, apiKey: 
 			messages: JSON.stringify(messages),
 		},
 	});
+
+	revalidatePath(`/`);
 };
