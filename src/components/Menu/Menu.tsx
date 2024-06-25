@@ -59,6 +59,7 @@ export const Menu: FC<Props> = ({ user, chatId }) => {
 							)}
 						</Flex>
 					),
+					title: chat.name,
 					key: chat.id,
 					icon: <MessageOutlined />,
 				})),

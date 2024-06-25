@@ -9,10 +9,11 @@ import { downloadFile } from '../../../lib/downloadFile';
 import { $Enums, prisma } from '@/lib/prisma';
 
 export const POST = async (req: Request): Promise<Response> => {
-	const { messages, apiKey, isGenerateImage } = (await req.json()) as {
+	const { messages, apiKey, isGenerateImage, translator } = (await req.json()) as {
 		messages: ChatMessage[];
 		apiKey: string;
 		isGenerateImage?: boolean;
+		translator?: string | false;
 	};
 	const openai = new OpenAI({
 		apiKey,
@@ -25,6 +26,24 @@ export const POST = async (req: Request): Promise<Response> => {
 				name: message.name ?? message.role,
 			}) as ChatCompletionMessageParam,
 	);
+
+	if (translator) {
+		const lastMessage = preparedMessages[preparedMessages.length - 1];
+		const messagesWithoutLast = preparedMessages.slice(0, -1);
+
+		const response = await openai.chat.completions.create({
+			model: `gpt-4-turbo-preview`,
+			stream: true,
+			messages: [
+				...messagesWithoutLast,
+				{ ...lastMessage, content: `Переведи на ${translator}: ${String(lastMessage.content)}` },
+			],
+		});
+
+		const stream = OpenAIStream(response);
+
+		return new StreamingTextResponse(stream);
+	}
 
 	if (isGenerateImage) {
 		const prompt = preparedMessages.map(message => `${message.role}: ${String(message.content)}`).join(`\n`);

@@ -7,16 +7,25 @@ interface Params {
 	apiKey: string;
 	chatId: string;
 	isGenerateImage: boolean;
+	translator: string | false;
 	chatRef: ProChatChatReference;
 }
 
-export const fetchSave = async ({ messages, isGenerateImage, chatId, apiKey, chatRef }: Params): Promise<Response> => {
+export const fetchSave = async ({
+	messages,
+	isGenerateImage,
+	chatId,
+	apiKey,
+	chatRef,
+	translator,
+}: Params): Promise<Response> => {
 	const response = await fetch(`/api/chat`, {
 		method: `POST`,
 		body: JSON.stringify({
 			messages,
 			apiKey,
 			isGenerateImage,
+			translator,
 		}),
 	});
 

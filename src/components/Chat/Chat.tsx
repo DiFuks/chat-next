@@ -3,8 +3,9 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { PictureFilled, PictureOutlined, SettingOutlined } from '@ant-design/icons';
 import { ChatMessage, ProChat, ProChatInstance } from '@ant-design/pro-chat';
-import { Button, Flex, Form, Input, Layout, Menu, Space, Switch, theme, Typography } from 'antd';
+import { Button, Input, Layout, Menu, Select, Skeleton, Space, Switch, theme, Typography } from 'antd';
 
+import { ApiKeyForm } from './ApiKeyForm';
 import { fetchSave } from './lib/fetchSave';
 
 interface Props {
@@ -14,7 +15,10 @@ interface Props {
 
 export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 	const [apiKey, setApiKey] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 	const isGenerateImageRef = useRef<HTMLElement>(null);
+	const [isSwitchChecked, setIsSwitchChecked] = useState(false);
+	const [translator, setTranslator] = useState<string | false>(false);
 	const chatRef = useRef<ProChatInstance>();
 
 	const { token } = theme.useToken();
@@ -25,6 +29,8 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 		if (lsApiKey) {
 			setApiKey(lsApiKey);
 		}
+
+		setIsLoading(false);
 	}, []);
 
 	useEffect(() => {
@@ -33,44 +39,14 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 				chatRef.current.scrollToBottom?.();
 			}
 		}, 10);
-	}, [chatId]);
+	}, [chatId, apiKey]);
+
+	if (isLoading) {
+		return <Skeleton style={{ padding: token.paddingXL }} avatar={{ shape: `circle` }} active />;
+	}
 
 	if (!apiKey) {
-		return (
-			<Flex align='center' justify='center' style={{ height: `100%` }}>
-				<Form<{ apiKey: string }>
-					labelCol={{ span: 8 }}
-					wrapperCol={{ span: 16 }}
-					onFinish={values => {
-						localStorage.setItem(`apiKey`, values.apiKey);
-						setApiKey(values.apiKey);
-					}}
-				>
-					<Form.Item
-						label='API key'
-						name='apiKey'
-						required
-						rules={[{ required: true, message: `Введите API key` }]}
-					>
-						<Input type='password' />
-					</Form.Item>
-
-					<Form.Item shouldUpdate wrapperCol={{ offset: 8, span: 16 }}>
-						{({ getFieldsError, isFieldsTouched }) => (
-							<Button
-								htmlType='submit'
-								disabled={
-									!isFieldsTouched(true) ||
-									getFieldsError().filter(({ errors }) => errors.length).length > 0
-								}
-							>
-								Сохранить
-							</Button>
-						)}
-					</Form.Item>
-				</Form>
-			</Flex>
-		);
+		return <ApiKeyForm setApiKey={setApiKey} />;
 	}
 
 	return (
@@ -107,20 +83,49 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 						title: `Пользователь`,
 					}}
 					actionsRender={() => [
-						<Space key='image-switcher' style={{ paddingTop: token.padding }}>
+						<Space key='image-switcher' style={{ paddingBottom: token.padding }}>
 							<Typography.Text>Создать изображение</Typography.Text>
 							<Switch
+								disabled={translator !== false}
 								checkedChildren={<PictureOutlined />}
 								unCheckedChildren={<PictureFilled />}
 								ref={isGenerateImageRef}
+								checked={isSwitchChecked}
+								onChange={setIsSwitchChecked}
+							/>
+						</Space>,
+
+						<Space key='translator' style={{ paddingBottom: token.padding }}>
+							<Typography.Text>Перевести на</Typography.Text>
+							<Select
+								defaultValue={translator}
+								onChange={setTranslator}
+								style={{ width: 150 }}
+								disabled={isSwitchChecked}
+								options={[
+									{
+										value: false,
+										label: `Не переводить`,
+									},
+									{
+										value: `Русский`,
+									},
+									{
+										value: `Английский`,
+									},
+								]}
 							/>
 						</Space>,
 					]}
+					inputRender={(_input, _onMessageSend, inputProps) => (
+						<Input.TextArea {...inputProps} autoSize={{ minRows: 5 }} />
+					)}
+					sendButtonRender={(_button, buttonProps) => (
+						<Button {...buttonProps} style={{ marginRight: token.padding, marginBottom: token.padding }}>
+							Отправить
+						</Button>
+					)}
 					style={{ flexGrow: 1 }}
-					placeholder='Введите сообщение'
-					config={{
-						model: `gpt-4-turbo-preview`,
-					}}
 					styles={{
 						chatListItemContent: {
 							width: `auto`,
@@ -128,6 +133,13 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 						chatListItem: {
 							cursor: `auto`,
 						},
+						chatInputArea: {
+							padding: token.padding,
+						},
+					}}
+					placeholder='Введите сообщение'
+					config={{
+						model: `gpt-4-turbo-preview`,
 					}}
 					helloMessage='Привет, чем я могу помочь?'
 					initialChatsList={initialChats}
@@ -136,11 +148,11 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 							messages,
 							apiKey,
 							chatId,
-							isGenerateImage: !!isGenerateImageRef.current?.classList.contains(`ant-switch-checked`),
+							isGenerateImage: isSwitchChecked,
 							chatRef,
+							translator,
 						})
 					}
-					sendButtonRender={(_button, buttonProps) => <Button {...buttonProps}>Отправить</Button>}
 				/>
 			</Layout.Content>
 		</Layout>
