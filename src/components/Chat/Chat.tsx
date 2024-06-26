@@ -65,7 +65,7 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 	}
 
 	return (
-		<Layout style={{ height: `100vh` }}>
+		<Layout style={{ height: `100dvh` }}>
 			<Layout.Header
 				style={{
 					padding: 0,

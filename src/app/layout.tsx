@@ -26,7 +26,7 @@ export const viewport: Viewport = {
 
 const RootLayout: FC<PropsWithChildren> = ({ children }) => (
 	<html lang='en'>
-		<body style={{ margin: 0, height: `100vh` }}>
+		<body style={{ margin: 0, height: `100dvh` }}>
 			<AntdRegistry>{children}</AntdRegistry>
 		</body>
 	</html>
