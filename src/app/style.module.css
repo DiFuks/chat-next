@@ -11,3 +11,7 @@
 .menuItem:hover .deleteButton {
     display: inline-block;
 }
+
+.chat {
+    padding-bottom: env(safe-area-inset-bottom);
+}

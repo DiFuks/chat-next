@@ -7,6 +7,7 @@ import { Button, Flex, Grid, Input, Layout, Menu, Select, Skeleton, Space, Switc
 
 import { ApiKeyForm } from './ApiKeyForm';
 import { fetchSave } from './lib/fetchSave';
+import styles from '../../app/style.module.css';
 
 interface Props {
 	initialChats: ChatMessage[];
@@ -65,7 +66,7 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 	}
 
 	return (
-		<Layout style={{ height: `100dvh` }}>
+		<Layout className={styles.chat} style={{ height: `100dvh` }}>
 			<Layout.Header
 				style={{
 					padding: 0,
