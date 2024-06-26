@@ -33,7 +33,7 @@ const Home = async ({
 
 	return (
 		<Layout style={{ height: `100vh` }} hasSider>
-			<Sider breakpoint='lg' collapsedWidth='0' width={300} style={{ height: `100vh` }}>
+			<Sider breakpoint='lg' collapsedWidth='0' width={300} defaultCollapsed style={{ height: `100vh` }}>
 				<Flex vertical style={{ height: `100%` }}>
 					<Flex align='center' style={{ padding: 10 }}>
 						<Image style={{ height: 50, width: `auto` }} src={logo} alt='logo' />
