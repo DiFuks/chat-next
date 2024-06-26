@@ -23,18 +23,12 @@ const Home = async ({
 }: {
 	searchParams: { chatId?: string; remove?: 'true' };
 }): Promise<ReactElement> => {
-	const user = await getUser({
+	const { chats, activeChat, userId } = await getUser({
 		chatId,
 	});
 
-	if (!chatId) {
-		redirect(`/?chatId=${user.chats[0].id}`);
-	}
-
-	const activeChat = user.chats.find(chat => chat.id === chatId);
-
-	if (!activeChat) {
-		redirect(`/?chatId=${user.chats[0].id}`);
+	if (!chatId || chatId !== activeChat.id) {
+		redirect(`/?chatId=${activeChat.id}`);
 	}
 
 	return (
@@ -47,7 +41,7 @@ const Home = async ({
 							chat next
 						</Text>
 					</Flex>
-					<Menu user={user} chatId={chatId} />
+					<Menu chats={chats} userId={userId} chatId={chatId} />
 					<Space style={{ padding: 10 }}>
 						<Link href='https://github.com/DiFuks/chat-next' target='_blank'>
 							<Button type='default' icon={<GithubOutlined />} />

@@ -25,13 +25,27 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 
 	useEffect(() => {
 		const lsApiKey = localStorage.getItem(`apiKey`);
+		const lsIsGenerateImage = localStorage.getItem(`isGenerateImage`);
+		const lsTranslator = localStorage.getItem(`translator`);
 
 		if (lsApiKey) {
 			setApiKey(lsApiKey);
 		}
 
+		setIsSwitchChecked(lsIsGenerateImage === `true`);
+		setTranslator(lsTranslator || false);
 		setIsLoading(false);
 	}, []);
+
+	const handleSwitchChange = (checked: boolean) => {
+		setIsSwitchChecked(checked);
+		localStorage.setItem(`isGenerateImage`, checked ? `true` : `false`);
+	};
+
+	const handleTranslatorChange = (value: string | false) => {
+		setTranslator(value);
+		localStorage.setItem(`translator`, value || ``);
+	};
 
 	useEffect(() => {
 		setTimeout(() => {
@@ -83,7 +97,7 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 						title: `Пользователь`,
 					}}
 					actionsRender={() => [
-						<Space key='image-switcher' style={{ paddingBottom: token.padding }}>
+						<Space key='image-switcher' style={{ paddingBottom: token.paddingSM }}>
 							<Typography.Text>Создать изображение</Typography.Text>
 							<Switch
 								disabled={translator !== false}
@@ -91,15 +105,15 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 								unCheckedChildren={<PictureFilled />}
 								ref={isGenerateImageRef}
 								checked={isSwitchChecked}
-								onChange={setIsSwitchChecked}
+								onChange={handleSwitchChange}
 							/>
 						</Space>,
 
-						<Space key='translator' style={{ paddingBottom: token.padding }}>
+						<Space key='translator' style={{ paddingBottom: token.paddingSM }}>
 							<Typography.Text>Перевести на</Typography.Text>
 							<Select
 								defaultValue={translator}
-								onChange={setTranslator}
+								onChange={handleTranslatorChange}
 								style={{ width: 150 }}
 								disabled={isSwitchChecked}
 								options={[
@@ -118,10 +132,10 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 						</Space>,
 					]}
 					inputRender={(_input, _onMessageSend, inputProps) => (
-						<Input.TextArea {...inputProps} autoSize={{ minRows: 5 }} />
+						<Input.TextArea {...inputProps} autoSize={{ minRows: 3 }} />
 					)}
 					sendButtonRender={(_button, buttonProps) => (
-						<Button {...buttonProps} style={{ marginRight: token.padding, marginBottom: token.padding }}>
+						<Button {...buttonProps} style={{ marginRight: token.paddingSM, marginBottom: token.paddingSM }}>
 							Отправить
 						</Button>
 					)}
@@ -134,7 +148,7 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 							cursor: `auto`,
 						},
 						chatInputArea: {
-							padding: token.padding,
+							padding: token.paddingSM,
 						},
 					}}
 					placeholder='Введите сообщение'

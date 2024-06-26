@@ -1,5 +1,7 @@
 .menuItem .deleteButton {
     display: none;
+    position: absolute;
+    right: 8px;
 }
 
 .menuItem .deleteButton::before {
