@@ -27,8 +27,8 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 
 	useEffect(() => {
 		const lsApiKey = localStorage.getItem(`apiKey`);
-		const lsIsGenerateImage = localStorage.getItem(`isGenerateImage`);
-		const lsTranslator = localStorage.getItem(`translator`);
+		const lsIsGenerateImage = localStorage.getItem(`isGenerateImage-${chatId}`);
+		const lsTranslator = localStorage.getItem(`translator-${chatId}`);
 
 		if (lsApiKey) {
 			setApiKey(lsApiKey);
@@ -37,16 +37,16 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 		setIsSwitchChecked(lsIsGenerateImage === `true`);
 		setTranslator(lsTranslator || false);
 		setIsLoading(false);
-	}, []);
+	}, [chatId]);
 
 	const handleSwitchChange = (checked: boolean): void => {
 		setIsSwitchChecked(checked);
-		localStorage.setItem(`isGenerateImage`, checked ? `true` : `false`);
+		localStorage.setItem(`isGenerateImage-${chatId}`, checked ? `true` : `false`);
 	};
 
 	const handleTranslatorChange = (value: string | false): void => {
 		setTranslator(value);
-		localStorage.setItem(`translator`, value || ``);
+		localStorage.setItem(`translator-${chatId}`, value || ``);
 	};
 
 	useEffect(() => {
