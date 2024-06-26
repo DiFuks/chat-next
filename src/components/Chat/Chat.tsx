@@ -5,9 +5,9 @@ import { PictureFilled, PictureOutlined, SettingOutlined } from '@ant-design/ico
 import { ChatMessage, ProChat, ProChatInstance } from '@ant-design/pro-chat';
 import { Button, Flex, Grid, Input, Layout, Menu, Select, Skeleton, Space, Switch, theme, Typography } from 'antd';
 
+import styles from '../../app/style.module.css';
 import { ApiKeyForm } from './ApiKeyForm';
 import { fetchSave } from './lib/fetchSave';
-import styles from '../../app/style.module.css';
 
 interface Props {
 	initialChats: ChatMessage[];
@@ -97,6 +97,13 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 					userMeta={{
 						avatar: `https://avatars.dicebear.com/api/avataaars/1.svg`,
 						title: `Пользователь`,
+					}}
+					backToBottomConfig={{
+						onMouseDown: () => {
+							if (chatRef.current) {
+								chatRef.current.scrollToBottom?.();
+							}
+						},
 					}}
 					actionsRender={() => (
 						<Flex gap='small' align={!breakpoint.sm ? `flex-end` : undefined} vertical={!breakpoint.sm}>
