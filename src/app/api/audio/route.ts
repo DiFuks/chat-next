@@ -5,13 +5,11 @@ export const POST = async (request: Request): Promise<Response> => {
 	const file = formData.get(`file`) as File;
 	const apiKey = formData.get(`apiKey`) as string;
 
-	console.log(file);
-
 	const openai = new OpenAI({
 		apiKey,
 	});
 
-	const openAIFile = await toFile(file, `audio.webm`);
+	const openAIFile = await toFile(file, `audio.${file.type.split(`/`).pop()}`);
 
 	const transcription = await openai.audio.transcriptions.create({
 		file: openAIFile,

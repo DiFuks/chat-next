@@ -1,7 +1,9 @@
-import { ChangeEvent, FC, KeyboardEvent, ReactNode, useRef, useState } from 'react';
-import { ArrowUpOutlined, AudioOutlined, SendOutlined, StopOutlined } from '@ant-design/icons';
+import { ChangeEvent, FC, KeyboardEvent, ReactNode, useState } from 'react';
+import { ArrowUpOutlined, AudioOutlined, SendOutlined } from '@ant-design/icons';
 import { Button, Flex, Input, theme } from 'antd';
 import { TextAreaProps } from 'antd/es/input';
+
+import { useRecorder } from '../lib/useRecorder';
 
 interface Props extends TextAreaProps {
 	onMessageSend: (message: string) => void;
@@ -18,34 +20,27 @@ export const MessageInput: FC<Props> = ({
 	apiKey,
 	...props
 }) => {
-	const { token } = theme.useToken();
-
 	const [audioState, setAudioState] = useState<false | 'recording' | 'loading'>(false);
-	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+	const recording = useRecorder();
+	const { token } = theme.useToken();
 
 	const handleSend = async (): Promise<void> => {
 		if (audioState === `recording`) {
-			mediaRecorderRef.current?.stop();
+			recording.stop();
 			setAudioState(false);
 
 			return;
 		}
 
 		if (!value) {
-			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-			const mediaRecorder = new MediaRecorder(stream);
-			mediaRecorderRef.current = mediaRecorder;
-			mediaRecorder.start();
-
 			setAudioState(`recording`);
 
-			mediaRecorder.ondataavailable = async e => {
-				stream.getTracks().forEach(track => track.stop());
+			try {
+				const audio = await recording.record();
 
 				const formData = new FormData();
 
-				formData.append(`file`, e.data);
+				formData.append(`file`, audio);
 				formData.append(`apiKey`, apiKey);
 
 				setAudioState(`loading`);
@@ -59,7 +54,9 @@ export const MessageInput: FC<Props> = ({
 
 				setAudioState(false);
 				onMessageSend(text);
-			};
+			} finally {
+				setAudioState(false);
+			}
 
 			return;
 		}
@@ -103,7 +100,12 @@ export const MessageInput: FC<Props> = ({
 			/>
 
 			<Button
-				style={{ position: `absolute`, right: token.paddingXS, bottom: token.paddingXS }}
+				style={{
+					position: `absolute`,
+					right: token.paddingXS,
+					bottom: token.paddingXS,
+					transform: audioState === `recording` ? `scale(1.3)` : `none`,
+				}}
 				size='large'
 				type='primary'
 				shape='circle'

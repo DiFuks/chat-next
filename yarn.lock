@@ -3422,6 +3422,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"audio-recorder-polyfill@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "audio-recorder-polyfill@npm:0.4.1"
+  checksum: 74eed4329835f891d39fc236ce9ccada0658cb97bcc42add0193beecd2086e3fefd38a2d8d47004c56619c8806d3936b2831b38cf84ca27f91157e5fc428b85d
+  languageName: node
+  linkType: hard
+
 "available-typed-arrays@npm:^1.0.5":
   version: 1.0.5
   resolution: "available-typed-arrays@npm:1.0.5"
@@ -3713,6 +3720,7 @@ __metadata:
     ai: "npm:^2.2.31"
     antd: "npm:5.13.3"
     antd-style: "npm:^3.6.2"
+    audio-recorder-polyfill: "npm:^0.4.1"
     cookie: "npm:^0.6.0"
     date-fns: "npm:^3.6.0"
     dotenv-cli: "npm:^7.3.0"
