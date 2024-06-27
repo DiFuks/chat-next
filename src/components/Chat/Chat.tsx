@@ -8,6 +8,7 @@ import { Button, Flex, Grid, Input, Layout, Menu, Select, Skeleton, Space, Switc
 import styles from '../../app/style.module.css';
 import { ApiKeyForm } from './ApiKeyForm';
 import { fetchSave } from './lib/fetchSave';
+import { MessageInput } from './ui/MessageInput';
 
 interface Props {
 	initialChats: ChatMessage[];
@@ -20,6 +21,9 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 	const isGenerateImageRef = useRef<HTMLElement>(null);
 	const [isSwitchChecked, setIsSwitchChecked] = useState(false);
 	const [translator, setTranslator] = useState<string | false>(false);
+
+	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
 	const chatRef = useRef<ProChatInstance>();
 	const breakpoint = Grid.useBreakpoint();
 
@@ -142,17 +146,15 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 							</Space>
 						</Flex>
 					)}
-					inputRender={(_input, _onMessageSend, inputProps) => (
-						<Input.TextArea {...inputProps} autoSize={{ minRows: 3 }} />
+					inputRender={(_input, onMessageSend, inputProps) => (
+						<MessageInput
+							{...inputProps}
+							apiKey={apiKey}
+							isButtonDisabled={isButtonDisabled}
+							onMessageSend={onMessageSend}
+						/>
 					)}
-					sendButtonRender={(_button, buttonProps) => (
-						<Button
-							{...buttonProps}
-							style={{ marginRight: token.paddingSM, marginBottom: token.paddingSM }}
-						>
-							Отправить
-						</Button>
-					)}
+					sendButtonRender={_button => null}
 					style={{ flexGrow: 1 }}
 					styles={{
 						chatListItemContent: {
@@ -179,6 +181,7 @@ export const Chat: FC<Props> = ({ initialChats, chatId }) => {
 							isGenerateImage: isSwitchChecked,
 							chatRef,
 							translator,
+							onChangeLoading: setIsButtonDisabled,
 						})
 					}
 				/>

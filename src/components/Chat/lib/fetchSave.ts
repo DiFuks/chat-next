@@ -8,6 +8,7 @@ interface Params {
 	chatId: string;
 	isGenerateImage: boolean;
 	translator: string | false;
+	onChangeLoading: (isLoading: boolean) => void;
 	chatRef: ProChatChatReference;
 }
 
@@ -18,7 +19,9 @@ export const fetchSave = async ({
 	apiKey,
 	chatRef,
 	translator,
+	onChangeLoading,
 }: Params): Promise<Response> => {
+	onChangeLoading(true);
 	const response = await fetch(`/api/chat`, {
 		method: `POST`,
 		body: JSON.stringify({
@@ -46,13 +49,13 @@ export const fetchSave = async ({
 				setTimeout(async () => {
 					const chatList = chatRef.current?.getChatList();
 
-					console.log(chatList);
-
 					if (!chatList) {
 						return;
 					}
 
 					await saveChat(chatList, chatId, apiKey);
+
+					onChangeLoading(false);
 				}, 100);
 
 				return;

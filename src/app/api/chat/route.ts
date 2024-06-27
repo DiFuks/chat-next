@@ -8,8 +8,8 @@ import { downloadFile } from '../../../lib/downloadFile';
 
 import { $Enums, prisma } from '@/lib/prisma';
 
-export const POST = async (req: Request): Promise<Response> => {
-	const { messages, apiKey, isGenerateImage, translator } = (await req.json()) as {
+export const POST = async (request: Request): Promise<Response> => {
+	const { messages, apiKey, isGenerateImage, translator } = (await request.json()) as {
 		messages: ChatMessage[];
 		apiKey: string;
 		isGenerateImage?: boolean;
